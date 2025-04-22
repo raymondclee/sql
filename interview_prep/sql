@@ -1,0 +1,64 @@
+Tik Tok Interview Prep (DataLemur)
+
+--Calculation of activation rate demonstrating the following:
+-- ROUND function for decimal places to address integer division
+-- LEFT JOIN and conditional statement
+-- COUNT and COUNT(DISTINCT)
+SELECT 
+round(count(t.email_id)::DECIMAL
+/ count(distinct e.email_id),2)as activation_rate
+FROM emails e
+LEFT JOIN texts t on t.email_id = e.email_id
+and t.signup_action = 'Confirmed'
+
+-- Second day confirmation demostrating the following:
+-- Output the users which registered but did not text confirm until exactly one day after their registration date
+-- INNER JOIN
+-- DATE / INTERVAL manipulations
+-- https://datalemur.com/questions/second-day-confirmation
+SELECT e.user_id
+FROM emails e
+INNER JOIN texts t on t.email_id = e.email_id
+WHERE t.action_date = e.signup_date + INTERVAL '1 day'
+AND t.signup_action = 'Confirmed'
+
+--CASE WHEN simple example
+SELECT
+    product_name,
+    price,
+    CASE
+        WHEN price < 20 THEN 'Budget'
+        WHEN price >= 20 AND price < 50 THEN 'Mid-Range'
+        ELSE 'Premium'
+    END AS price_category
+FROM
+    products;
+
+SELECT
+  CASE
+  WHEN condition1
+  WHEN condition2
+  ELSE condition 3
+  END AS name
+  FROM
+  table
+
+
+
+-- CASE WHEN with subquery approach
+SELECT
+    c.customer_id,
+    c.customer_name,
+    CASE
+        WHEN (SELECT COUNT(*)
+              FROM orders o
+              WHERE o.customer_id = c.customer_id
+                AND o.order_date >= DATE('now', '-1 year')) > 3 THEN 'Active'
+        WHEN (SELECT COUNT(*)
+              FROM orders o
+              WHERE o.customer_id = c.customer_id
+                AND o.order_date >= DATE('now', '-1 year')) BETWEEN 1 AND 3 THEN 'Occasional'
+        ELSE 'Inactive'
+    END AS customer_activity
+FROM
+    customers c;
